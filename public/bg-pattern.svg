@@ -1,0 +1,11 @@
+<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="leaf-pattern" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
+      <path d="M25 0C25 13.8071 13.8071 25 0 25C13.8071 25 25 36.1929 25 50C25 36.1929 36.1929 25 50 25C36.1929 25 25 13.8071 25 0Z" fill="#22c55e" fill-opacity="0.03" transform="translate(0, 0)"/>
+      <path d="M25 0C25 13.8071 13.8071 25 0 25C13.8071 25 25 36.1929 25 50C25 36.1929 36.1929 25 50 25C36.1929 25 25 13.8071 25 0Z" fill="#22c55e" fill-opacity="0.03" transform="translate(50, 50)"/>
+      <path d="M15 0C15 8.28427 8.28427 15 0 15C8.28427 15 15 21.7157 15 30C15 21.7157 21.7157 15 30 15C21.7157 15 15 8.28427 15 0Z" fill="#22c55e" fill-opacity="0.03" transform="translate(70, 10) rotate(45)"/>
+      <path d="M10 0C10 5.52285 5.52285 10 0 10C5.52285 10 10 14.4772 10 20C10 14.4772 14.4772 10 20 10C14.4772 10 10 5.52285 10 0Z" fill="#22c55e" fill-opacity="0.03" transform="translate(20, 70) rotate(15)"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#leaf-pattern)"/>
+</svg> 

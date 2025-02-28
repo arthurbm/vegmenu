@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -27,6 +27,17 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { type RestaurantMenu } from "@/lib/schema";
 import { experimental_useObject as useObject } from "@ai-sdk/react";
 import { restaurantMenuSchema } from "@/lib/schema";
+import {
+  Check,
+  Globe,
+  Link,
+  Loader2,
+  MessageSquare,
+  Pause,
+  AlertCircle,
+  Info,
+  Utensils,
+} from "lucide-react";
 
 const formSchema = z.object({
   url: z.string().url("Please enter a valid URL"),
@@ -34,6 +45,7 @@ const formSchema = z.object({
 
 export function RestaurantLinkForm() {
   const [error, setError] = useState<string | null>(null);
+  const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -53,22 +65,49 @@ export function RestaurantLinkForm() {
     schema: restaurantMenuSchema,
   });
 
-  console.log(menuError);
+  // Display menu error if it exists
+  useEffect(() => {
+    if (menuError) {
+      setError(
+        menuError.message || "Failed to extract menu. Please try again.",
+      );
+    }
+  }, [menuError]);
+
+  // Show success animation when menu is loaded
+  useEffect(() => {
+    if (menu && !isLoading) {
+      setShowSuccessAnimation(true);
+      const timer = setTimeout(() => setShowSuccessAnimation(false), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [menu, isLoading]);
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     setError(null);
+    setShowSuccessAnimation(false);
     submit(values);
   }
 
   return (
     <div className="space-y-8">
-      <Card className="relative overflow-hidden border-2 border-primary/20 shadow-lg">
+      <Card className="card-transition relative overflow-hidden border-2 border-border shadow-md">
         <div className="absolute right-0 top-0 h-16 w-16 overflow-hidden">
           <div className="absolute right-0 top-0 h-16 w-16 -translate-y-1/2 translate-x-1/2 rotate-45 bg-primary/10"></div>
         </div>
-        <CardHeader className="bg-primary/5 pb-8">
+        {showSuccessAnimation && (
+          <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+            <div className="rounded-full bg-primary/20 p-4">
+              <Check size={48} className="animate-pulse text-primary" />
+            </div>
+          </div>
+        )}
+        <CardHeader className="bg-muted/50 pb-8">
           <CardTitle className="text-2xl font-bold text-primary">
-            Extract Vegetarian Menu
+            <span className="flex items-center gap-2">
+              <Utensils size={24} className="text-primary" />
+              Extract Vegetarian Menu
+            </span>
           </CardTitle>
           <CardDescription className="text-base">
             Enter a restaurant website URL to discover vegetarian options
@@ -82,34 +121,24 @@ export function RestaurantLinkForm() {
                 name="url"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="font-medium text-primary">
+                    <FormLabel className="flex items-center gap-1.5 font-medium text-primary">
+                      <Globe size={16} className="text-primary" />
                       Restaurant URL
                     </FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input
                           placeholder="https://restaurant-website.com"
-                          className="border-primary/20 pl-10 focus-visible:ring-primary/30"
+                          className="border-input pl-10 focus-visible:ring-primary/30"
                           {...field}
                         />
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="18"
-                          height="18"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="absolute left-3 top-1/2 -translate-y-1/2 text-primary/60"
-                        >
-                          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-                          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-                        </svg>
+                        <Link
+                          size={18}
+                          className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/60"
+                        />
                       </div>
                     </FormControl>
-                    <FormDescription className="text-muted-foreground/80">
+                    <FormDescription>
                       Enter the URL of a restaurant website to extract its
                       vegetarian menu
                     </FormDescription>
@@ -121,47 +150,16 @@ export function RestaurantLinkForm() {
                 <Button
                   type="submit"
                   disabled={isLoading}
-                  className="bg-primary hover:bg-primary/90"
+                  className="bg-primary text-primary-foreground hover:bg-primary/90"
                 >
                   {isLoading ? (
                     <span className="flex items-center gap-2">
-                      <svg
-                        className="h-4 w-4 animate-spin"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        ></circle>
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        ></path>
-                      </svg>
+                      <Loader2 size={16} className="animate-spin" />
                       Extracting...
                     </span>
                   ) : (
                     <span className="flex items-center gap-2">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="18"
-                        height="18"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
-                      </svg>
+                      <MessageSquare size={18} />
                       Extract Menu
                     </span>
                   )}
@@ -171,23 +169,9 @@ export function RestaurantLinkForm() {
                     type="button"
                     variant="outline"
                     onClick={() => stop()}
-                    className="border-primary/20 text-primary hover:bg-primary/5 hover:text-primary"
+                    className="border-input text-primary hover:bg-primary/5 hover:text-primary"
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="18"
-                      height="18"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="mr-2"
-                    >
-                      <rect width="6" height="16" x="4" y="4" rx="1" />
-                      <rect width="6" height="16" x="14" y="4" rx="1" />
-                    </svg>
+                    <Pause size={18} className="mr-2" />
                     Stop
                   </Button>
                 )}
@@ -198,17 +182,17 @@ export function RestaurantLinkForm() {
       </Card>
 
       {isLoading && !menu && (
-        <Card className="border-primary/20 shadow-md">
+        <Card className="shimmer border-border shadow-md">
           <CardHeader>
-            <Skeleton className="h-8 w-3/4 bg-primary/10" />
-            <Skeleton className="h-4 w-1/2 bg-primary/10" />
+            <Skeleton className="h-8 w-3/4 bg-muted" />
+            <Skeleton className="h-4 w-1/2 bg-muted" />
           </CardHeader>
           <CardContent className="space-y-4">
             {Array.from({ length: 3 }).map((_, i) => (
               <div key={i} className="space-y-2">
-                <Skeleton className="h-6 w-3/4 bg-primary/10" />
-                <Skeleton className="h-4 w-full bg-primary/10" />
-                <Skeleton className="h-4 w-1/4 bg-primary/10" />
+                <Skeleton className="h-6 w-3/4 bg-muted" />
+                <Skeleton className="h-4 w-full bg-muted" />
+                <Skeleton className="h-4 w-1/4 bg-muted" />
               </div>
             ))}
           </CardContent>
@@ -216,106 +200,58 @@ export function RestaurantLinkForm() {
       )}
 
       {error && (
-        <Card className="border-red-200 bg-red-50 shadow-md">
+        <Card className="animate-fade-in border-destructive/20 bg-destructive/5 shadow-md">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-red-600">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <line x1="12" x2="12" y1="8" y2="12" />
-                <line x1="12" x2="12.01" y1="16" y2="16" />
-              </svg>
+            <CardTitle className="flex items-center gap-2 text-destructive">
+              <AlertCircle size={20} />
               Error
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-red-600">{error}</p>
+            <p className="text-destructive">{error}</p>
           </CardContent>
         </Card>
       )}
 
       {menu && (
-        <Card className="overflow-hidden border-primary/20 shadow-md">
-          <CardHeader className="border-b border-primary/10 bg-primary/5">
+        <Card className="animate-fade-in overflow-hidden border-border shadow-md">
+          <CardHeader className="border-b border-border bg-muted/50">
             <div className="flex items-center gap-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="text-primary"
-              >
-                <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2" />
-                <path d="M7 2v20" />
-                <path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7" />
-              </svg>
-              <CardTitle className="text-xl font-bold text-primary">
-                {menu?.restaurantName ?? "Loading restaurant name..."}
-              </CardTitle>
+              <div className="animate-float flex h-10 w-10 items-center justify-center rounded-full bg-primary/20">
+                <Utensils size={20} className="text-primary" />
+              </div>
+              <div>
+                <CardTitle className="text-xl font-bold text-primary">
+                  {menu?.restaurantName ?? "Loading restaurant name..."}
+                </CardTitle>
+                <CardDescription className="text-base">
+                  Vegetarian Menu Items
+                </CardDescription>
+              </div>
             </div>
-            <CardDescription className="text-base">
-              Vegetarian Menu Items
-            </CardDescription>
           </CardHeader>
-          <CardContent className="pt-6">
+          <CardContent className="max-h-[60vh] overflow-y-auto pt-6">
             <div className="space-y-6">
               {!menu?.menuItems || menu.menuItems.length === 0 ? (
                 isLoading ? (
                   <div className="flex items-center justify-center py-8 text-muted-foreground">
-                    <svg
-                      className="mr-2 h-5 w-5 animate-spin text-primary"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
+                    <Loader2
+                      size={20}
+                      className="mr-2 animate-spin text-primary"
+                    />
                     Extracting menu items...
                   </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="40"
-                      height="40"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="mb-3 text-muted-foreground/50"
-                    >
-                      <circle cx="12" cy="12" r="10" />
-                      <line x1="8" x2="16" y1="12" y2="12" />
-                    </svg>
-                    <p>No vegetarian items found</p>
+                    <div className="rounded-full bg-muted p-6">
+                      <AlertCircle
+                        size={40}
+                        className="text-muted-foreground"
+                      />
+                    </div>
+                    <p className="mt-4 font-medium">
+                      No vegetarian items found
+                    </p>
                     <p className="mt-2 text-sm">
                       Try another restaurant or check if the website has a menu
                       section.
@@ -326,7 +262,10 @@ export function RestaurantLinkForm() {
                 menu.menuItems.map((item, index) => (
                   <div
                     key={index}
-                    className="overflow-hidden rounded-lg border border-primary/10 bg-primary/5 transition-all hover:shadow-md"
+                    className="card-transition overflow-hidden rounded-lg border border-border bg-card"
+                    style={{
+                      animationDelay: `${index * 0.1}s`,
+                    }}
                   >
                     <div className="p-4">
                       <div className="flex items-start justify-between">
@@ -350,32 +289,19 @@ export function RestaurantLinkForm() {
               )}
               {isLoading && menu?.menuItems && menu.menuItems.length > 0 && (
                 <div className="space-y-2">
-                  <Skeleton className="h-6 w-3/4 bg-primary/10" />
-                  <Skeleton className="h-4 w-full bg-primary/10" />
-                  <Skeleton className="h-4 w-1/4 bg-primary/10" />
+                  <Skeleton className="h-6 w-3/4 bg-muted" />
+                  <Skeleton className="h-4 w-full bg-muted" />
+                  <Skeleton className="h-4 w-1/4 bg-muted" />
                 </div>
               )}
             </div>
           </CardContent>
-          <CardFooter className="border-t border-primary/10 bg-primary/5">
+          <CardFooter className="border-t border-border bg-muted/50">
             <div className="flex items-center text-xs text-muted-foreground">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="mr-1 text-primary/60"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <path d="M12 16v-4" />
-                <path d="M12 8h.01" />
-              </svg>
-              {isLoading ? "Extracting menu..." : "Menu extraction complete."}{" "}
+              <Info size={14} className="mr-1 text-primary/60" />
+              {isLoading
+                ? "Extracting menu..."
+                : "Menu extraction complete."}{" "}
               Some items may not be accurately identified as vegetarian.
             </div>
           </CardFooter>
