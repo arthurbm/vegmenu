@@ -4,8 +4,8 @@ import { RestaurantLinkForm } from "@/components/RestaurantLinkForm";
 export default async function Home() {
   return (
     <HydrateClient>
-      <main className="min-h-screen w-full bg-gradient-to-b from-green-50/90 via-white/80 to-green-50/90 px-4 py-12 backdrop-blur-sm">
-        <div className="relative mx-auto max-w-5xl">
+      <main className="flex min-h-full w-full flex-col bg-gradient-to-b from-green-50/90 via-white/80 to-green-50/90 px-4 py-12 backdrop-blur-sm">
+        <div className="relative mx-auto max-w-5xl flex-1">
           {/* Decorative elements */}
           <div className="pointer-events-none absolute -left-16 -top-16 h-64 w-64 rounded-full bg-primary/5 blur-3xl"></div>
           <div className="pointer-events-none absolute -bottom-32 -right-16 h-64 w-64 rounded-full bg-primary/5 blur-3xl"></div>

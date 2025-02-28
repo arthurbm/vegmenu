@@ -230,7 +230,7 @@ export function RestaurantLinkForm() {
               </div>
             </div>
           </CardHeader>
-          <CardContent className="max-h-[60vh] overflow-y-auto pt-6">
+          <CardContent className="max-h-[50vh] overflow-y-auto pt-6">
             <div className="space-y-6">
               {!menu?.menuItems || menu.menuItems.length === 0 ? (
                 isLoading ? (

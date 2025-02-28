@@ -16,8 +16,8 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${GeistSans.variable}`}>
-      <body className="overflow-x-hidden bg-[url('/bg-pattern.svg')] bg-fixed">
+    <html lang="en" className={`${GeistSans.variable} h-full`}>
+      <body className="h-full overflow-x-hidden bg-[url('/bg-pattern.svg')] bg-fixed">
         <TRPCReactProvider>{children}</TRPCReactProvider>
       </body>
     </html>
