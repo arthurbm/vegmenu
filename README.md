@@ -1,29 +1,74 @@
-# Create T3 App
+# VEGMENU
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+VEGMENU is a platform that helps users discover and save vegetarian menu items from restaurant websites. This application uses AI to extract vegetarian menu items from restaurant websites.
 
-## What's next? How do I make an app with this?
+## Features
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+- Extract vegetarian menu items from restaurant websites using AI
+- View extracted menu items in a clean, organized interface
+- Simple and intuitive user experience
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+## Getting Started
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+### Prerequisites
 
-## Learn More
+- Node.js (version specified in `.nvmrc`)
+- pnpm
+- PostgreSQL database
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+### Installation
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+1. Clone the repository
+   ```bash
+   git clone https://github.com/yourusername/vegmenu.git
+   cd vegmenu
+   ```
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+2. Install dependencies
+   ```bash
+   nvm use  # Use the Node.js version specified in .nvmrc
+   pnpm install
+   ```
 
-## How do I deploy this?
+3. Set up environment variables
+   ```bash
+   cp .env.example .env
+   ```
+   
+   Edit the `.env` file and add your Google API key and other required variables.
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+4. Start the development server
+   ```bash
+   pnpm dev
+   ```
+
+5. Open [http://localhost:3000](http://localhost:3000) in your browser
+
+## Usage
+
+1. Enter a restaurant website URL in the form
+2. Click "Extract Menu" to extract vegetarian menu items
+3. View the extracted menu items
+
+## Technologies Used
+
+- Next.js
+- TypeScript
+- Vercel AI SDK
+- Google Generative AI (Gemini)
+- Shadcn UI
+- Zod for schema validation
+- React Hook Form
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- This project was created as part of the VEGMENU PRD implementation
+- Thanks to Vercel for the AI SDK
+
+---
+
+This project was bootstrapped with [Create T3 App](https://create.t3.gg/).
